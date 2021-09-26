@@ -64,6 +64,16 @@ func routes(_ app: Application) throws {
         return "User has been banned"
     }
     
+    app.get("delete", ":userID") { req -> String in
+        let id = req.parameters.get("userID")!
+        let uuid = UUID(uuidString: id)
+        _ = User.query(on: req.db)
+            .filter(\.$id == uuid!)
+            .delete()
+        
+        return "User has been removed"
+    }
+    
     app.post("registerUser") { req -> EventLoopFuture<User> in
         try User.Create.validate(content: req)
         let create = try req.content.decode(User.Create.self)
