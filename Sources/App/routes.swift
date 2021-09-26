@@ -31,11 +31,25 @@ func routes(_ app: Application) throws {
         let amount: Int = req.parameters.get("amount") ?? 100
         return User.query(on: req.db)
             .sort(\.$score, .descending)
+            .filter(\.$isBanned == false)
             .range(..<amount)
             .all()
             .flatMapThrowing { users in
             return try users.map(User.PublicUser.init)
         }
+    }
+    
+//    app.get("globalDeaths") { req -> EventLoopFuture<Int> in
+//        let scores = User.query(on: req.db)
+//            .all(\.$deaths)
+//            .flatMap { score in
+//
+//            }
+//    }
+    
+    app.get("userCount") { req -> EventLoopFuture<Int> in
+        return User.query(on: req.db)
+            .count()
     }
     
     app.get("unban", ":userID") { req -> String in
@@ -95,6 +109,13 @@ func routes(_ app: Application) throws {
     let passwordProtected = app.grouped(User.authenticator())
     passwordProtected.post("login") { req -> User in
         try req.auth.require(User.self)
+    }
+    
+    passwordProtected.post("submitDeath") { req -> String in
+        let user = try req.auth.require(User.self)
+        user.deaths! += 1
+        let _ = user.update(on: req.db) .map { user }
+        return "ok"
     }
     
     passwordProtected.post("submitScore") { req -> String in

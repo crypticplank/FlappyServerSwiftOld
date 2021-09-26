@@ -21,6 +21,9 @@ final class User: Model, Content {
     @Field(key: "score")
     var score: Int?
     
+    @Field(key: "deaths")
+    var deaths: Int?
+    
     @Field(key: "passwordHash")
     var passwordHash: String
     
@@ -41,10 +44,11 @@ final class User: Model, Content {
     
     init() { }
     
-    init(id: UUID? = UUID(), name: String, score: Int? = 0, passwordHash: String, jailbroken: Bool? = false, hasHackedTools: Bool? = false, ranInEmulator: Bool? = false, hasModifiedScore: Bool? = false, isBanned: Bool? = false) {
+    init(id: UUID? = UUID(), name: String, score: Int? = 0, deaths: Int? = 0, passwordHash: String, jailbroken: Bool? = false, hasHackedTools: Bool? = false, ranInEmulator: Bool? = false, hasModifiedScore: Bool? = false, isBanned: Bool? = false) {
         self.id = id
         self.name = name
         self.score = score
+        self.deaths = deaths
         self.passwordHash = passwordHash
         self.jailbroken = jailbroken
         self.hasHackedTools = hasHackedTools
@@ -59,11 +63,13 @@ extension User {
         var id: UUID?
         var name: String
         var score: Int?
+        var deaths: Int?
 
         init(_ user: User) throws {
             self.id = try user.requireID()
             self.name = user.name
             self.score = user.score
+            self.deaths = user.deaths
         }
     }
 }
@@ -75,6 +81,7 @@ extension User {
                 .id()
                 .field("name", .string)
                 .field("score", .int)
+                .field("deaths", .int)
                 .field("passwordHash", .string)
                 .field("jailbroken", .bool)
                 .field("hasHackedTools", .bool)
