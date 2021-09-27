@@ -39,8 +39,12 @@ func routes(_ app: Application) throws {
         }
     }
     
-    app.get("globalDeaths") { req -> String in
-        return "Not implemented"
+    app.get("globalDeaths") { req -> EventLoopFuture<Int> in
+        return User.query(on: req.db)
+            .sum(\.$deaths)
+            .map { deaths -> Int in
+                return deaths!
+            }
     }
     
     app.get("userCount") { req -> EventLoopFuture<Int> in
