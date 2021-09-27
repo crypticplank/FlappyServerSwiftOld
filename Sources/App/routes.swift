@@ -39,53 +39,13 @@ func routes(_ app: Application) throws {
         }
     }
     
-//    app.get("globalDeaths") { req -> EventLoopFuture<Int> in
-//        let scores = User.query(on: req.db)
-//            .all(\.$deaths)
-//            .flatMap { score in
-//
-//            }
-//    }
+    app.get("globalDeaths") { req -> String in
+        return "Not implemented"
+    }
     
     app.get("userCount") { req -> EventLoopFuture<Int> in
         return User.query(on: req.db)
             .count()
-    }
-    
-    app.get("unban", ":userID") { req -> String in
-        let id = req.parameters.get("userID")!
-        let uuid = UUID(uuidString: id)
-        _ = User.find(uuid!, on: req.db)
-        .unwrap(or: Abort(.notFound))
-        .flatMap { user -> EventLoopFuture<Void> in
-            user.isBanned = false
-            return user.save(on: req.db)
-        }
-        
-        return "User has been unbanned"
-    }
-    
-    app.get("ban", ":userID") { req -> String in
-        let id = req.parameters.get("userID")!
-        let uuid = UUID(uuidString: id)
-    
-        _ = User.find(uuid!, on: req.db)
-        .unwrap(or: Abort(.notFound))
-        .flatMap { user -> EventLoopFuture<Void> in
-            user.isBanned = true
-            return user.save(on: req.db)
-        }
-        return "User has been banned"
-    }
-    
-    app.get("delete", ":userID") { req -> String in
-        let id = req.parameters.get("userID")!
-        let uuid = UUID(uuidString: id)
-        _ = User.query(on: req.db)
-            .filter(\.$id == uuid!)
-            .delete()
-        
-        return "User has been removed"
     }
     
     app.post("registerUser") { req -> EventLoopFuture<User> in
@@ -138,5 +98,55 @@ func routes(_ app: Application) throws {
             return "failed"
         }
         return "ok"
+    }
+    
+    // Admin Things
+    
+    passwordProtected.get("unban", ":userID") { req -> String in
+        let user = try req.auth.require(User.self)
+        if user.admin! {
+            let id = req.parameters.get("userID")!
+            let uuid = UUID(uuidString: id)
+            _ = User.find(uuid!, on: req.db)
+            .unwrap(or: Abort(.notFound))
+            .flatMap { user -> EventLoopFuture<Void> in
+                user.isBanned = false
+                return user.save(on: req.db)
+            }
+            
+            return "User has been unbanned"
+        }
+        return "Unauthorized"
+    }
+    
+    passwordProtected.get("ban", ":userID") { req -> String in
+        let user = try req.auth.require(User.self)
+        if user.admin! {
+            let id = req.parameters.get("userID")!
+            let uuid = UUID(uuidString: id)
+            
+            _ = User.find(uuid!, on: req.db)
+                .unwrap(or: Abort(.notFound))
+                .flatMap { user -> EventLoopFuture<Void> in
+                    user.isBanned = true
+                    return user.save(on: req.db)
+                }
+            return "User has been banned"
+        }
+        return "Unauthorized"
+    }
+    
+    passwordProtected.get("delete", ":userID") { req -> String in
+        let user = try req.auth.require(User.self)
+        if user.admin! {
+            let id = req.parameters.get("userID")!
+            let uuid = UUID(uuidString: id)
+            _ = User.query(on: req.db)
+                .filter(\.$id == uuid!)
+                .delete()
+            
+            return "User has been removed"
+        }
+        return "Unauthorized"
     }
 }
