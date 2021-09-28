@@ -7,9 +7,6 @@ func routes(_ app: Application) throws {
         return "Flappy Bird User API"
     }
     
-//    let userController = UserController()
-//    try app.register(collection: userController)
-    
     app.get("users") { req in
         return User.query(on: req.db).all().flatMapThrowing { users in
             return try users.map(User.PublicUser.init)
@@ -66,10 +63,6 @@ func routes(_ app: Application) throws {
             .map { user }
     }
     
-    app.get("internal_users") { req in
-        User.query(on: req.db).all()
-    }
-    
     let passwordProtected = app.grouped(User.authenticator())
     passwordProtected.post("login") { req -> User in
         try req.auth.require(User.self)
@@ -106,6 +99,15 @@ func routes(_ app: Application) throws {
     
     // Admin Things
     
+    passwordProtected.get("internal_users") { req -> EventLoopFuture<[User]> in
+        let user = try req.auth.require(User.self)
+        if user.admin! {
+            return User.query(on: req.db).all()
+        } else {
+            throw Abort(.unauthorized)
+        }
+    }
+    
     passwordProtected.get("unban", ":userID") { req -> String in
         let user = try req.auth.require(User.self)
         if user.admin! {
@@ -119,8 +121,9 @@ func routes(_ app: Application) throws {
             }
             
             return "User has been unbanned"
+        } else {
+            throw Abort(.unauthorized)
         }
-        return "Unauthorized"
     }
     
     passwordProtected.get("ban", ":userID") { req -> String in
@@ -136,8 +139,9 @@ func routes(_ app: Application) throws {
                     return user.save(on: req.db)
                 }
             return "User has been banned"
+        } else {
+            throw Abort(.unauthorized)
         }
-        return "Unauthorized"
     }
     
     passwordProtected.get("delete", ":userID") { req -> String in
@@ -150,7 +154,8 @@ func routes(_ app: Application) throws {
                 .delete()
             
             return "User has been removed"
+        } else {
+            throw Abort(.unauthorized)
         }
-        return "Unauthorized"
     }
 }
