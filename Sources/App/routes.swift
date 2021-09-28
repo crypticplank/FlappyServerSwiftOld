@@ -32,8 +32,8 @@ func routes(_ app: Application) throws {
             .range(..<amount)
             .all()
             .flatMapThrowing { users in
-            return try users.map(User.PublicUser.init)
-        }
+                return try users.map(User.PublicUser.init)
+            }
     }
     
     app.get("globalDeaths") { req -> EventLoopFuture<Int> in
@@ -49,7 +49,7 @@ func routes(_ app: Application) throws {
             .count()
     }
     
-    app.post("registerUser") { req -> EventLoopFuture<User> in
+    app.post("registerUser") { req -> User.PublicUser in
         try User.Create.validate(content: req)
         let create = try req.content.decode(User.Create.self)
         guard create.password == create.confirmPassword else {
@@ -59,8 +59,9 @@ func routes(_ app: Application) throws {
             name: create.name,
             passwordHash: Bcrypt.hash(create.password)
         )
-        return user.save(on: req.db)
+        let _ = user.save(on: req.db)
             .map { user }
+        return try User.PublicUser(user)
     }
     
     let passwordProtected = app.grouped(User.authenticator())
