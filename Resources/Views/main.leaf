@@ -1,0 +1,29 @@
+<html>
+<head>
+<head>
+<link href="https://fonts.googleapis.com/css?family=Ubuntu&subset=cyrillic,latin" rel='stylesheet' type='text/css' />
+
+<style type="text/css" >
+    @charset "UTF-8";
+    body {
+        font-family : 'Ubuntu', sans-serif;
+    }
+</style>
+</head>
+<body>
+<h1>Flappy Bird API endpoint</h1>
+<br>
+<h2>Top 25 players</h2>
+<ul>
+#if(count(users) > 0):
+    #for(user in users):
+        <li>
+        #(user.name): #(user.score)
+        </li>
+    #endfor
+#else:
+    <p>No users found in the database</p>
+#endif
+</ul>
+</body>
+</html>

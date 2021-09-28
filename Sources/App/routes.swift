@@ -1,16 +1,33 @@
 import Vapor
 import FluentSQL
 import Fluent
+import Leaf
 
 func routes(_ app: Application) throws {
-    app.get { req in
-        return "Flappy Bird User API"
+    app.get { req -> EventLoopFuture<View> in
+        return User.query(on: req.db)
+            .sort(\.$score, .descending)
+            .filter(\.$isBanned == false)
+            .range(..<25)
+            .all()
+            .flatMap { users in
+                return req.view.render("main", ["users": users])
+            }
     }
     
     app.get("users") { req in
         return User.query(on: req.db).all().flatMapThrowing { users in
             return try users.map(User.PublicUser.init)
         }
+    }
+    
+    app.get("bans") { req -> EventLoopFuture<View> in
+        return User.query(on: req.db)
+            .filter(\.$isBanned == true)
+            .all()
+            .flatMap{ users in
+                return req.view.render("bans", ["users": users])
+            }
     }
     
     app.get("user", ":name") { req -> EventLoopFuture<User.PublicUser>in

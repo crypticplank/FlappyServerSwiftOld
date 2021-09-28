@@ -11,6 +11,7 @@ let package = Package(
         .package(url: "https://github.com/vapor/fluent.git", from: "4.0.0"),
         .package(url: "https://github.com/vapor/fluent-sqlite-driver.git", from: "4.0.0"),
         .package(url: "https://github.com/vapor/jwt.git", from: "4.0.0-rc"),
+        .package(url: "https://github.com/vapor/leaf.git", from: "4.0.0"),
     ],
     targets: [
         .target(
@@ -20,6 +21,7 @@ let package = Package(
                 .product(name: "Vapor", package: "vapor"),
                 .product(name: "FluentSQLiteDriver", package: "fluent-sqlite-driver"),
                 .product(name: "JWT", package: "jwt"),
+                .product(name: "Leaf", package: "leaf"),
             ],
             swiftSettings: [
                 // Enable better optimizations when building in Release configuration. Despite the use of

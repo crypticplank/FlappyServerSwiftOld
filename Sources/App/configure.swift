@@ -1,5 +1,6 @@
 import Vapor
 import Fluent
+import Leaf
 import FluentSQLiteDriver
 
 // configures your application
@@ -10,6 +11,8 @@ public func configure(_ app: Application) throws {
     
     app.databases.use(.sqlite(.file("flappybird.sqlite")), as: .sqlite)
     app.migrations.add(User.Migration())
+    
+    app.views.use(.leaf)
     
     // register routes
     try routes(app)
