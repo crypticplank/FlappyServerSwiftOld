@@ -100,7 +100,7 @@ extension User {
                 .field("banReason", .string)
                 .field("admin", .bool)
                 .unique(on: "name")
-                .create()
+                .update()
         }
 
         func revert(on database: Database) -> EventLoopFuture<Void> {

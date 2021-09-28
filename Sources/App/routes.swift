@@ -3,6 +3,12 @@ import FluentSQL
 import Fluent
 import Leaf
 
+struct mainVars: Codable {
+    let users: [User]
+    let players: Int
+    let deaths: Int
+}
+
 func routes(_ app: Application) throws {
     app.get { req -> EventLoopFuture<View> in
         return User.query(on: req.db)
@@ -10,8 +16,13 @@ func routes(_ app: Application) throws {
             .filter(\.$isBanned == false)
             .range(..<25)
             .all()
-            .flatMap { users in
-                return req.view.render("main", ["users": users])
+            .flatMap{ users -> EventLoopFuture<View> in
+                return User.query(on: req.db).count().flatMap { playerCount -> EventLoopFuture<View> in
+                    return User.query(on: req.db).sum(\.$deaths).flatMap { deaths -> EventLoopFuture<View> in
+                        let vars = mainVars(users: users, players: playerCount, deaths: deaths!)
+                        return req.view.render("main", vars)
+                    }
+                }
             }
     }
     

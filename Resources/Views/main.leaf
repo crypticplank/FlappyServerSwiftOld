@@ -13,6 +13,12 @@
 <body>
 <h1>Flappy Bird API endpoint</h1>
 <br>
+<h2>Statistics</h2>
+<ul>
+    <li>Players: #(players)</li>
+    <li>Deaths: #(deaths)</li>
+</ul>
+<br>
 <h2>Top 25 players</h2>
 <ul>
 #if(count(users) > 0):
