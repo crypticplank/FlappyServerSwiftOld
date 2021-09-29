@@ -13,6 +13,7 @@ let package = Package(
         .package(url: "https://github.com/vapor/jwt.git", from: "4.0.0-rc"),
         .package(url: "https://github.com/vapor/leaf.git", from: "4.0.0"),
         .package(url: "https://github.com/krzyzanowskim/CryptoSwift.git", .branch("master")),
+        .package(url: "https://github.com/nodes-vapor/gatekeeper.git", from: "4.0.0"),
     ],
     targets: [
         .target(
@@ -23,7 +24,8 @@ let package = Package(
                 .product(name: "FluentSQLiteDriver", package: "fluent-sqlite-driver"),
                 .product(name: "JWT", package: "jwt"),
                 .product(name: "Leaf", package: "leaf"),
-                .product(name: "CryptoSwift", package: "CryptoSwift")
+                .product(name: "CryptoSwift", package: "CryptoSwift"),
+                .product(name: "Gatekeeper", package: "gatekeeper"),
             ],
             swiftSettings: [
                 // Enable better optimizations when building in Release configuration. Despite the use of

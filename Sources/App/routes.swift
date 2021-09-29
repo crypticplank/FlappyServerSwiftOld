@@ -2,6 +2,7 @@ import Vapor
 import FluentSQL
 import Fluent
 import Leaf
+import Gatekeeper
 
 struct mainVars: Codable {
     let users: [User]
@@ -78,7 +79,9 @@ func routes(_ app: Application) throws {
             .count()
     }
     
-    app.post("registerUser") { req -> User.PublicUser in    
+    let rateLimitedRoute = app.grouped(GatekeeperMiddleware())
+    
+    rateLimitedRoute.post("registerUser") { req -> User.PublicUser in
         try User.Create.validate(content: req)
         let create = try req.content.decode(User.Create.self)
                               
@@ -99,6 +102,7 @@ func routes(_ app: Application) throws {
     }
     
     let passwordProtected = app.grouped(User.authenticator())
+    
     passwordProtected.post("login") { req -> User in
         try req.auth.require(User.self)
     }
