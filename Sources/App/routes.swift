@@ -123,6 +123,7 @@ func routes(_ app: Application) throws {
             }
             
             print("User: \(user.name.description)[\(user.id!.description)] submitted score: \(score), took \(time) seconds.")
+            
             if time + 10 < score || time - 15 > score {
                 user.isBanned = true
                 user.banReason = "Cheating (Anticheat)"
@@ -133,13 +134,12 @@ func routes(_ app: Application) throws {
                 user.score = score
                 let _ = user.update(on: req.db) .map { user }
                 print("Submitted score for \(user.name.description)")
-                throw Abort(.accepted)
             }
+            throw Abort(.accepted)
         } else {
             print("Cannot submit score, user is banned")
             throw Abort(.badRequest)
         }
-        throw Abort(.badRequest)
     }
     
     // Admin Things
