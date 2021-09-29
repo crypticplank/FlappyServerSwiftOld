@@ -148,8 +148,12 @@ func routes(_ app: Application) throws {
         let user = try req.auth.require(User.self)
         if user.admin! {
             let id = req.parameters.get("userID")!
-            let uuid = UUID(uuidString: id)
-            _ = User.find(uuid!, on: req.db)
+            
+            guard let uuid = UUID(uuidString: id) else {
+                throw Abort(.badRequest, reason: "Not a valid uuid")
+            }
+            
+            _ = User.find(uuid, on: req.db)
             .unwrap(or: Abort(.notFound))
             .flatMap { user -> EventLoopFuture<Void> in
                 user.isBanned = false
@@ -166,9 +170,12 @@ func routes(_ app: Application) throws {
         let user = try req.auth.require(User.self)
         if user.admin! {
             let id = req.parameters.get("userID")!
-            let uuid = UUID(uuidString: id)
             
-            _ = User.find(uuid!, on: req.db)
+            guard let uuid = UUID(uuidString: id) else {
+                throw Abort(.badRequest, reason: "Not a valid uuid")
+            }
+            
+            _ = User.find(uuid, on: req.db)
                 .unwrap(or: Abort(.notFound))
                 .flatMap { user -> EventLoopFuture<Void> in
                     user.isBanned = true
@@ -185,9 +192,13 @@ func routes(_ app: Application) throws {
         let user = try req.auth.require(User.self)
         if user.admin! {
             let id = req.parameters.get("userID")!
-            let uuid = UUID(uuidString: id)
+            
+            guard let uuid = UUID(uuidString: id) else {
+                throw Abort(.badRequest, reason: "Not a valid uuid")
+            }
+            
             _ = User.query(on: req.db)
-                .filter(\.$id == uuid!)
+                .filter(\.$id == uuid)
                 .delete()
             
             return "User has been removed"
