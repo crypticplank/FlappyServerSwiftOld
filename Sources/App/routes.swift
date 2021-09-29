@@ -110,27 +110,35 @@ func routes(_ app: Application) throws {
         return "ok"
     }
     
-    passwordProtected.post("submitScore") { req -> String in
+    passwordProtected.post("submitScore") { req -> EventLoopFuture<String> in
         let user = try req.auth.require(User.self)
         if !user.isBanned! {
-            let score = try req.content.decode(User.SubmitScore.self)
-            print("User: \(user.name.description)[\(user.id!.description)] submitted score: \(score.score), took \(score.time) seconds.")
-            if score.time + 10 < score.score || score.time - 15 > score.score {
+            let scoreEncrypted = try req.content.decode(User.SubmitScore.self)
+            guard let score = Encryption.decryptInt(base64: scoreEncrypted.score) else {
+                throw Abort(.badRequest, reason:"Error decrypting score")
+            }
+            
+            guard let time = Encryption.decryptInt(base64: scoreEncrypted.time) else {
+                throw Abort(.badRequest, reason:"Error decrypting time")
+            }
+            
+            print("User: \(user.name.description)[\(user.id!.description)] submitted score: \(score), took \(time) seconds.")
+            if time + 10 < score || time - 15 > score {
                 user.isBanned = true
                 user.banReason = "Cheating (Anticheat)"
                 let _ = user.update(on: req.db) .map { user }
-                return "You have been banned. If your believe this is an error, please contact the FlappyBird Revision Team"
+                throw Abort(.notAcceptable, reason: "You have been banned. If your believe this is an error, please contact the FlappyBird Revision Team")
             }
-            if score.score > user.score! {
-                user.score = score.score
+            if score > user.score! {
+                user.score = score
                 let _ = user.update(on: req.db) .map { user }
                 print("Submitted score for \(user.name.description)")
-                return "submitted"
+                throw Abort(.accepted)
             }
         } else {
-            return "failed"
+            throw Abort(.badRequest)
         }
-        return "ok"
+        throw Abort(.badRequest)
     }
     
     // Admin Things

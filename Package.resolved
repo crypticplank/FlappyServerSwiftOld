@@ -29,6 +29,15 @@
         }
       },
       {
+        "package": "CryptoSwift",
+        "repositoryURL": "https://github.com/krzyzanowskim/CryptoSwift.git",
+        "state": {
+          "branch": "master",
+          "revision": "4b0565384d3c4c588af09e660535b2c7c9bf5b39",
+          "version": null
+        }
+      },
+      {
         "package": "fluent",
         "repositoryURL": "https://github.com/vapor/fluent.git",
         "state": {

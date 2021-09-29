@@ -17,8 +17,8 @@ extension User {
     }
     
     struct SubmitScore: Content {
-        var score: Int
-        var time: Int
+        var score: String
+        var time: String
     }
 }
 
