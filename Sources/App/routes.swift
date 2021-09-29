@@ -112,7 +112,7 @@ func routes(_ app: Application) throws {
             if score.score > score.time || score.score < score.time + 15 {
                 user.isBanned = true
                 let _ = user.update(on: req.db) .map { user }
-                return "You have been banned. If your beleive this is an error, please contact the FlappyBird Revision Team"
+                return "You have been banned. If your believe this is an error, please contact the FlappyBird Revision Team"
             }
             if score.score > user.score! {
                 user.score = score.score
