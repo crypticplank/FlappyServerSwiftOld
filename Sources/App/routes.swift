@@ -117,6 +117,7 @@ func routes(_ app: Application) throws {
             print("User: \(user.name.description)[\(user.id!.description)] submitted score: \(score.score), took \(score.time) seconds.")
             if score.time + 10 < score.score || score.time - 15 > score.score {
                 user.isBanned = true
+                user.banReason = "Cheating (Anticheat)"
                 let _ = user.update(on: req.db) .map { user }
                 return "You have been banned. If your believe this is an error, please contact the FlappyBird Revision Team"
             }
@@ -171,6 +172,7 @@ func routes(_ app: Application) throws {
                 .unwrap(or: Abort(.notFound))
                 .flatMap { user -> EventLoopFuture<Void> in
                     user.isBanned = true
+                    user.banReason = "Not specified"
                     return user.save(on: req.db)
                 }
             return "User has been banned"
