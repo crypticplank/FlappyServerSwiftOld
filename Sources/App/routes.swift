@@ -17,7 +17,7 @@ func routes(_ app: Application) throws {
             .range(..<25)
             .all()
             .flatMap{ users -> EventLoopFuture<View> in
-                return User.query(on: req.db).count().flatMap { playerCount -> EventLoopFuture<View> in
+                return User.query(on: req.db).filter(\.$isBanned == false).count().flatMap { playerCount -> EventLoopFuture<View> in
                     return User.query(on: req.db).sum(\.$deaths).flatMap { deaths -> EventLoopFuture<View> in
                         let vars = mainVars(users: users, players: playerCount, deaths: deaths!)
                         return req.view.render("main", vars)
