@@ -74,12 +74,18 @@ func routes(_ app: Application) throws {
     
     app.get("userCount") { req -> EventLoopFuture<Int> in
         return User.query(on: req.db)
+            .filter(\.$isBanned == false)
             .count()
     }
     
-    app.post("registerUser") { req -> User.PublicUser in
+    app.post("registerUser") { req -> User.PublicUser in    
         try User.Create.validate(content: req)
         let create = try req.content.decode(User.Create.self)
+                              
+        if create.name.count > 15 {
+            throw Abort(.badRequest, reason: "Your name may not be longer that 15 characters.")
+        }
+                              
         guard create.password == create.confirmPassword else {
             throw Abort(.badRequest, reason: "Passwords did not match")
         }
