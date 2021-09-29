@@ -109,7 +109,7 @@ func routes(_ app: Application) throws {
         if !user.isBanned! {
             let score = try req.content.decode(User.SubmitScore.self)
             print("User: \(user.name.description)[\(user.id!.description)] submitted score: \(score.score), took \(score.time) seconds.")
-            if score.score > score.time || score.score < score.time + 15 {
+            if score.time + 10 < score.score || score.time - 15 > score.score {
                 user.isBanned = true
                 let _ = user.update(on: req.db) .map { user }
                 return "You have been banned. If your believe this is an error, please contact the FlappyBird Revision Team"
