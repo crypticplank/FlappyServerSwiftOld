@@ -18,7 +18,7 @@
 </head>
 <body>
 <br>
-#if(title):
+#if(user):
     <h2>Name: #(user.name)</h2>
     <h2>UUID: #(user.id)</h2>
     <h2>Score: #(user.score)</h2>
