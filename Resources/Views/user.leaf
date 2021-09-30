@@ -1,7 +1,13 @@
 <html>
 <head>
-<head>
 <link href="https://fonts.googleapis.com/css?family=Ubuntu&subset=cyrillic,latin" rel='stylesheet' type='text/css' />
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+<title>#(user.name)</title>
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:site" content="@FlappyBirdRev" />
+<meta name="twitter:title" content="#(user.name)'s Profile" />
+<meta property="og:title" content="#(user.name) on FlappyBird" />
 
 <style type="text/css" >
     @charset "UTF-8";
