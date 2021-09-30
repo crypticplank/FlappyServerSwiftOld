@@ -43,14 +43,13 @@ func routes(_ app: Application) throws {
             }
     }
     
-    app.get("user", ":name") { req -> EventLoopFuture<User.PublicUser>in
+    app.get("user", ":name") { req -> EventLoopFuture<View> in
         let name = req.parameters.get("name")
         return User.query(on: req.db)
             .filter(\.$name == name!)
             .first()
-            .flatMapThrowing {
-                guard let user = $0 else { throw Abort(.notFound) }
-                return try User.PublicUser(user)
+            .flatMap { user -> EventLoopFuture<View> in
+                return req.view.render("user", ["user": user])
             }
     }
     
