@@ -3,6 +3,7 @@ import FluentSQL
 import Fluent
 import Leaf
 import Gatekeeper
+import FlappyEncryption
 
 struct mainVars: Codable {
     let users: [User]
@@ -118,11 +119,11 @@ func routes(_ app: Application) throws {
         let user = try req.auth.require(User.self)
         if !user.isBanned! {
             let scoreEncrypted = try req.content.decode(User.SubmitScore.self)
-            guard let score = Encryption.decryptInt(base64: scoreEncrypted.score) else {
+            guard let score = FlappyEncryption.decryptInt(base64: scoreEncrypted.score) else {
                 throw Abort(.badRequest, reason:"Error decrypting score")
             }
             
-            guard let time = Encryption.decryptInt(base64: scoreEncrypted.time) else {
+            guard let time = FlappyEncryption.decryptInt(base64: scoreEncrypted.time) else {
                 throw Abort(.badRequest, reason:"Error decrypting time")
             }
             
