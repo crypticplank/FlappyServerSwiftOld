@@ -46,7 +46,7 @@ func routes(_ app: Application) throws {
     app.get("user", ":name") { req -> EventLoopFuture<View> in
         let name = req.parameters.get("name")
         return User.query(on: req.db)
-            .filter(\.$name , .custom("ilike"), name!)
+            .filter(\.$name == name!)
             .first()
             .flatMap { user -> EventLoopFuture<View> in
                 return req.view.render("user", ["user": user])
