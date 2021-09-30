@@ -18,8 +18,12 @@
 </head>
 <body>
 <br>
-<h2>Name: #(user.name)</h2>
-<h2>UUID: #(user.id)</h2>
-<h2>Score: #(user.score)</h2>
+#if(title):
+    <h2>Name: #(user.name)</h2>
+    <h2>UUID: #(user.id)</h2>
+    <h2>Score: #(user.score)</h2>
+#else:
+    <h2>No user found with that name</h2>
+#endif
 </body>
 </html>
