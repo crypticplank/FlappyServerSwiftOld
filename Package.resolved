@@ -6,8 +6,8 @@
         "repositoryURL": "https://github.com/swift-server/async-http-client.git",
         "state": {
           "branch": null,
-          "revision": "16ad7588b1bb1a3000524785b9217e238f0c2ea8",
-          "version": "1.6.0"
+          "revision": "d928cc81b31796dcea7378bf7e2519bed569c659",
+          "version": "1.6.1"
         }
       },
       {
@@ -42,7 +42,7 @@
         "repositoryURL": "https://github.com/BrandonPlank/FlappyEncryption",
         "state": {
           "branch": "main",
-          "revision": "c8848421b86df2c0a5121b348f0ab21a324bf9eb",
+          "revision": "1f0be9eff4b7e5cb4d1a1c1a5494fbd0b2e2ccbd",
           "version": null
         }
       },

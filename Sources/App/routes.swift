@@ -133,12 +133,12 @@ func routes(_ app: Application) throws {
                 210 < 100 == false 10 > 110 == false, 200 window
             */
 
-//             if (time + 100 < score || time - 100 > score) && score > 1000 {
-//                 user.isBanned = true
-//                 user.banReason = "Cheating (Anticheat)"
-//                 let _ = user.update(on: req.db) .map { user }
-//                 throw Abort(.notAcceptable, reason: "You have been banned. If your believe this is an error, please contact the FlappyBird Revision Team")
-//             }
+             if (time + 100 < score || time - 100 > score) && score > 1000 {
+                 user.isBanned = true
+                 user.banReason = "Cheating (Anticheat)"
+                 let _ = user.update(on: req.db) .map { user }
+                 throw Abort(.notAcceptable, reason: "You have been banned. If your believe this is an error, please contact the FlappyBird Revision Team")
+             }
             
             if score > user.score! {
                 user.score = score
