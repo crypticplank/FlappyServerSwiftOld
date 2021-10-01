@@ -128,7 +128,12 @@ func routes(_ app: Application) throws {
             
             print("User: \(user.name.description)[\(user.id!.description)] submitted score: \(score), took \(time) seconds.")
             
-            if time + 10 < score || time - 15 > score {
+            /*
+                Time = 100, score 101
+                200 < 101 == false 0 > 101 == false, 200 window
+            */
+
+            if time + 100 < score || time - 100 > score && score > 1000 {
                 user.isBanned = true
                 user.banReason = "Cheating (Anticheat)"
                 let _ = user.update(on: req.db) .map { user }
