@@ -146,7 +146,7 @@ func routes(_ app: Application) throws {
             }
             throw Abort(.accepted)
         } else {
-            print("Cannot submit score, user is banned")
+            print("Cannot submit score, \(user.name.description) is banned")
             throw Abort(.badRequest)
         }
     }
