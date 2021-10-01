@@ -133,7 +133,7 @@ func routes(_ app: Application) throws {
                 210 < 100 == false 10 > 110 == false, 200 window
             */
 
-             if (time + 100 < score || time - 100 > score) && score > 1000 {
+             if (time + 100 < score || time - 100 > score) /* && score > 1000 */ {
                  user.isBanned = true
                  user.banReason = "Cheating (Anticheat)"
                  let _ = user.update(on: req.db) .map { user }
