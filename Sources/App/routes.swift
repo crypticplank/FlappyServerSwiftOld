@@ -176,6 +176,7 @@ func routes(_ app: Application) throws {
             .unwrap(or: Abort(.notFound))
             .flatMap { user -> EventLoopFuture<Void> in
                 user.isBanned = false
+                user.banReason = nil
                 return user.save(on: req.db)
             }
             
@@ -202,6 +203,28 @@ func routes(_ app: Application) throws {
                     return user.save(on: req.db)
                 }
             return "User has been banned"
+        } else {
+            throw Abort(.unauthorized)
+        }
+    }
+    
+    passwordProtected.get("restoreScore", ":userID", ":score") { req -> String in
+        let user = try req.auth.require(User.self)
+        if user.admin! {
+            let id = req.parameters.get("userID")!
+            let score: Int = req.parameters.get("score") ?? 0
+            
+            guard let uuid = UUID(uuidString: id) else {
+                throw Abort(.badRequest, reason: "Not a valid uuid")
+            }
+            
+            _ = User.find(uuid, on: req.db)
+                .unwrap(or: Abort(.notFound))
+                .flatMap { user -> EventLoopFuture<Void> in
+                    user.score = score
+                    return user.save(on: req.db)
+                }
+            return "Restored score to \(score)"
         } else {
             throw Abort(.unauthorized)
         }
