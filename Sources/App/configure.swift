@@ -3,16 +3,12 @@ import Fluent
 import Leaf
 import FluentSQLiteDriver
 import Gatekeeper
-import SimpleFileLogger
 
 // configures your application
 public func configure(_ app: Application) throws {
     // uncomment to serve files from /Public folder
     // app.middleware.use(FileMiddleware(publicDirectory: app.directory.publicDirectory))
     //app.middleware.use(UserAuthenticator())
-    
-    services.register(SimpleFileLogger.self)
-    config.prefer(SimpleFileLogger.self, for: Logger.self)
     
     app.caches.use(.memory)
     
