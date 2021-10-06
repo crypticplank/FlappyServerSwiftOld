@@ -120,21 +120,21 @@ func routes(_ app: Application) throws {
         let user = try req.auth.require(User.self)
         user.jailbroken = true
         let _ = user.update(on: req.db) .map { user }
-        return "ok"
+        throw Abort(.accepted)
     }
     
     passwordProtected.post("emulator") { req -> EventLoopFuture<String> in
         let user = try req.auth.require(User.self)
         user.ranInEmulator = true
         let _ = user.update(on: req.db) .map { user }
-        return "ok"
+        throw Abort(.accepted)
     }
     
     passwordProtected.post("hasHackedTools") { req -> EventLoopFuture<String> in
         let user = try req.auth.require(User.self)
         user.hasHackedTools = true
         let _ = user.update(on: req.db) .map { user }
-        return "ok"
+        throw Abort(.accepted)
     }
     
     // End Hacking endpoinbs
