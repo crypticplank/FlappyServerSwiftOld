@@ -114,42 +114,61 @@ func routes(_ app: Application) throws {
         return "ok"
     }
     
+    // Hacking endpoints
+    
+    passwordProtected.post("isJailbroken") { req -> EventLoopFuture<String> in
+        let user = try req.auth.require(User.self)
+        user.jailbroken = true
+        let _ = user.update(on: req.db) .map { user }
+        return "ok"
+    }
+    
+    passwordProtected.post("emulator") { req -> EventLoopFuture<String> in
+        let user = try req.auth.require(User.self)
+        user.ranInEmulator = true
+        let _ = user.update(on: req.db) .map { user }
+        return "ok"
+    }
+    
+    passwordProtected.post("hasHackedTools") { req -> EventLoopFuture<String> in
+        let user = try req.auth.require(User.self)
+        user.hasHackedTools = true
+        let _ = user.update(on: req.db) .map { user }
+        return "ok"
+    }
+    
+    // End Hacking endpoinbs
+    
     passwordProtected.post("submitScore") { req -> EventLoopFuture<String> in
         let user = try req.auth.require(User.self)
-        if !user.isBanned! {
-            let scoreEncrypted = try req.content.decode(User.SubmitScore.self)
-            guard let score = FlappyEncryption.decryptInt(base64: scoreEncrypted.score) else {
-                throw Abort(.badRequest, reason:"Error decrypting score")
-            }
-            
-            guard let time = FlappyEncryption.decryptInt(base64: scoreEncrypted.time) else {
-                throw Abort(.badRequest, reason:"Error decrypting time")
-            }
-            
-            print("User: \(user.name.description)[\(user.id!.description)] submitted score: \(score), took \(time) seconds.")
-            
-            /*
-                Time = 110, score 100
-                210 < 100 == false 10 > 110 == false, 200 window
-            */
-
-             if (time + 100 < score || time - 100 > score) /* && score > 1000 */ {
-                 user.isBanned = true
-                 user.banReason = "Cheating (Anticheat)"
-                 let _ = user.update(on: req.db) .map { user }
-                 throw Abort(.notAcceptable, reason: "You have been banned. If your believe this is an error, please contact the FlappyBird Revision Team")
-             }
-            
-            if score > user.score! {
-                user.score = score
-                let _ = user.update(on: req.db) .map { user }
-                print("Submitted score for \(user.name.description)")
-            }
-            throw Abort(.accepted)
-        } else {
-            print("Cannot submit score, \(user.name.description) is banned")
-            throw Abort(.badRequest)
+        let scoreEncrypted = try req.content.decode(User.SubmitScore.self)
+        guard let score = FlappyEncryption.decryptInt(base64: scoreEncrypted.score) else {
+            throw Abort(.badRequest, reason:"Error decrypting score")
         }
+        
+        guard let time = FlappyEncryption.decryptInt(base64: scoreEncrypted.time) else {
+            throw Abort(.badRequest, reason:"Error decrypting time")
+        }
+        
+        req.logger.info("User: \(user.name.description):(IP:\(req.http.remotePeer.hostname)[ID:\(user.id!.description)] submitted score: \(score), took \(time) seconds.")
+        
+        /*
+            Time = 110, score 100
+            210 < 100 == false 10 > 110 == false, 200 window
+        */
+
+         if (time + 100 < score || time - 100 > score) /* && score > 1000 */ {
+             user.isBanned = true
+             user.banReason = "Cheating (Anticheat)"
+             let _ = user.update(on: req.db) .map { user }
+         }
+        
+        if score > user.score! {
+            user.score = score
+            let _ = user.update(on: req.db) .map { user }
+            req.logger.info("Processed score for \(user.name.description)")
+        }
+        throw Abort(.accepted)
     }
     
     // Admin Things
