@@ -150,7 +150,7 @@ func routes(_ app: Application) throws {
             throw Abort(.badRequest, reason:"Error decrypting time")
         }
         
-        req.logger.info("User: \(user.name.description):(IP:\(req.http.remotePeer.hostname)[ID:\(user.id!.description)] submitted score: \(score), took \(time) seconds.")
+        req.logger.info("User: \(user.name.description):(IP:\(req.remoteAddress!)[ID:\(user.id!.description)] submitted score: \(score), took \(time) seconds.")
         
         /*
             Time = 110, score 100
