@@ -53,6 +53,16 @@ func routes(_ app: Application) throws {
             }
     }
     
+    app.get("getID", ":name") { req -> EventLoopFuture<String> in
+        let name = req.parameters.get("name")
+        return User.query(on: req.db)
+            .filter(\.$name == name!)
+            .first()
+            .map { user -> String in
+                return user!.id!.uuidString
+            }
+    }
+    
     app.get("leaderboard", ":amount") { req -> EventLoopFuture<[User.PublicUser]> in
         let amount: Int = req.parameters.get("amount") ?? 100
         return User.query(on: req.db)
@@ -205,10 +215,11 @@ func routes(_ app: Application) throws {
         }
     }
     
-    passwordProtected.get("ban", ":userID") { req -> String in
+    passwordProtected.get("ban", ":userID", ":reason") { req -> String in
         let user = try req.auth.require(User.self)
         if user.admin! {
             let id = req.parameters.get("userID")!
+            let reason = req.parameters.get("reason")!
             
             guard let uuid = UUID(uuidString: id) else {
                 throw Abort(.badRequest, reason: "Not a valid uuid")
@@ -218,7 +229,7 @@ func routes(_ app: Application) throws {
                 .unwrap(or: Abort(.notFound))
                 .flatMap { user -> EventLoopFuture<Void> in
                     user.isBanned = true
-                    user.banReason = "Not specified"
+                    user.banReason = reason
                     return user.save(on: req.db)
                 }
             return "User has been banned"
