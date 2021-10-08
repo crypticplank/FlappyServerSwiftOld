@@ -12,7 +12,7 @@ public func configure(_ app: Application) throws {
     
     app.caches.use(.memory)
     
-    app.gatekeeper.config = .init(maxRequests: 1, per: .hour)
+    app.gatekeeper.config = .init(maxRequests: 5, per: .hour)
     
     app.databases.use(.sqlite(.file("flappybird.sqlite")), as: .sqlite)
     app.migrations.add(User.Migration())

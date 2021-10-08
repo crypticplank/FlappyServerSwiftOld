@@ -151,25 +151,22 @@ func routes(_ app: Application) throws {
     
     passwordProtected.post("submitScore") { req -> EventLoopFuture<String> in
         let user = try req.auth.require(User.self)
-        let scoreEncrypted = try req.content.decode(User.SubmitScore.self)
-        guard let score = FlappyEncryption.decryptInt(base64: scoreEncrypted.score) else {
-            throw Abort(.badRequest, reason:"Error decrypting score")
+        let score = try req.content.decode(User.SubmitScore.self)
+        
+        if !FlappyEncryption.verify(score.score, score.time, score.verify) {
+            throw Abort(.badRequest, reason: "Unable to verify score")
         }
         
-        guard let time = FlappyEncryption.decryptInt(base64: scoreEncrypted.time) else {
-            throw Abort(.badRequest, reason:"Error decrypting time")
-        }
-        
-        req.logger.info("User: \(user.name.description)[ID:\(user.id!.description)] submitted score: \(score), took \(time) seconds.")
+        req.logger.info("User: \(user.name.description)[ID:\(user.id!.description)] submitted score: \(score.score), took \(score.time) seconds.")
 
-        if (time + 100 < score || time - 100 > score) /* && score > 1000 */ {
+        if (score.time + 100 < score.score || score.time - 100 > score.score) /* && score > 1000 */ {
              user.isBanned = true
              user.banReason = "Cheating (Anticheat)"
              let _ = user.update(on: req.db) .map { user }
          }
         
-        if score > user.score! {
-            user.score = score
+        if score.score > user.score! {
+            user.score = score.score
             let _ = user.update(on: req.db) .map { user }
             req.logger.info("Processed score for \(user.name.description)")
         }
