@@ -108,13 +108,16 @@ func routes(_ app: Application) throws {
         )
         let _ = user.save(on: req.db)
             .map { user }
+        req.logger.info("\(user.name) signed up")
         return try User.PublicUser(user)
     }
     
     let passwordProtected = app.grouped(User.authenticator())
     
     passwordProtected.post("login") { req -> User in
-        try req.auth.require(User.self)
+        let user = try req.auth.require(User.self)
+        req.logger.info("\(user.name) logging in")
+        return user
     }
     
     passwordProtected.post("submitDeath") { req -> String in
@@ -156,7 +159,7 @@ func routes(_ app: Application) throws {
         do {
             score = try req.content.decode(User.SubmitScore.self)
         } catch {
-            req.logger.error("Unable to decore score for \(user.name), possibly using older version.")
+            req.logger.error("Unable to decode score for \(user.name), possibly using older version.")
         }
         
         guard let score = score else {
@@ -164,8 +167,11 @@ func routes(_ app: Application) throws {
         }
         
         if !FlappyEncryption.verify(score.score, score.time, score.verify) {
+            req.logger.error("Hashs did not match, expected: \(FlappyEncryption.genHash(score.score, score.time)), got: \(score.verify)")
             throw Abort(.badRequest, reason: "Unable to verify score")
         }
+        
+        req.logger.info("Score verification passed: \(score.verify)")
         
         req.logger.info("User: \(user.name.description)[ID:\(user.id!.description)] submitted score: \(score.score), took \(score.time) seconds.")
 
