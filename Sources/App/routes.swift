@@ -280,4 +280,26 @@ func routes(_ app: Application) throws {
             throw Abort(.unauthorized)
         }
     }
+    
+    passwordProtected.get("makeAdmin", ":userID") { req -> String in
+        let user = try req.auth.require(User.self)
+        if user.admin! {
+            let id = req.parameters.get("userID")!
+            
+            guard let uuid = UUID(uuidString: id) else {
+                throw Abort(.badRequest, reason: "Not a valid uuid")
+            }
+            
+            _ = User.find(uuid, on: req.db)
+                .unwrap(or: Abort(.notFound))
+                .flatMap { user -> EventLoopFuture<Void> in
+                    user.admin = true
+                    return user.save(on: req.db)
+                }
+            
+            return "User has been removed"
+        } else {
+            throw Abort(.unauthorized)
+        }
+    }
 }
