@@ -151,7 +151,17 @@ func routes(_ app: Application) throws {
     
     passwordProtected.post("submitScore") { req -> EventLoopFuture<String> in
         let user = try req.auth.require(User.self)
-        let score = try req.content.decode(User.SubmitScore.self)
+        
+        var score: User.SubmitScore? = nil
+        do {
+            score = try req.content.decode(User.SubmitScore.self)
+        } catch {
+            req.logger.error("Unable to decore score for \(user.name), possibly using older version.")
+        }
+        
+        guard let score = score else {
+            throw Abort(.badRequest)
+        }
         
         if !FlappyEncryption.verify(score.score, score.time, score.verify) {
             throw Abort(.badRequest, reason: "Unable to verify score")
