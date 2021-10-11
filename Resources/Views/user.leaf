@@ -20,8 +20,10 @@
 <br>
 #if(user):
     <h2>Name: #(user.name)</h2>
-    <h2>UUID: #(user.id)</h2>
     <h2>Score: #(user.score)</h2>
+    <h2>Deaths: #(user.deaths)</h2>
+    <br>
+    <p>ID: #(user.id)</p>
 #else:
     <h2>No user found with that name</h2>
 #endif
