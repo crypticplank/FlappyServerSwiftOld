@@ -26,7 +26,7 @@ extension User {
 extension User {
     func createToken(source: SessionSource) throws -> Token {
         let calendar = Calendar(identifier: .gregorian)
-        let expiryDate = calendar.date(byAdding: .year, value: 1, to: Date())
+        let expiryDate = calendar.date(byAdding: .year, value: 1000, to: Date()) // <- Good luck to anyone who is alive by then
         return try Token(userId: requireID(), token: [UInt8].random(count: 16).base64, source: source, expiresAt: expiryDate)
     }
 }

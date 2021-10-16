@@ -117,7 +117,7 @@ func routes(_ app: Application) throws {
         return try User.PublicUser(user)
     }
     
-    let passwordProtected = app.grouped(User.authenticator())
+    let passwordProtected = app.grouped([User.authenticator(), Token.authenticator()])
     
     passwordProtected.post("login") { req -> User.PublicUser in
         let user = try req.auth.require(User.self)
