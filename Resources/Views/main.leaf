@@ -90,7 +90,7 @@
           </header>
           #if(count(users) > 0):
             #for(user in users):
-              <div href="user/#(user.name)" class="text-dyn col-md-4 themed-grid-col"><a href="user/#(user.name)">#(user.name)</a></div>
+              <div href="user/#(user.name)" class="text-dyn col-md-8 themed-grid-col"><a href="user/#(user.name)">#(user.name)</a></div>
               <div class="text-dyn col-md-4 themed-grid-col">Score: #(user.score)</div>
             #endfor
           #else:
