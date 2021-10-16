@@ -235,9 +235,16 @@ func routes(_ app: Application) throws {
             
             _ = User.find(uuid, on: req.db)
                 .unwrap(or: Abort(.notFound))
-                .flatMap { user -> EventLoopFuture<Void> in
-                    user.isBanned = true
-                    user.banReason = reason
+                .flatMapThrowing { readUser -> EventLoopFuture<Void> in
+                    
+                    if !user.owner! {
+                        if user.admin! && readUser.admin! {
+                            throw Abort(.unauthorized, reason: "Cannot ban another admin")
+                        }
+                    }
+                    
+                    readUser.isBanned = true
+                    readUser.banReason = reason
                     return user.save(on: req.db)
                 }
             return "User has been banned"
@@ -279,7 +286,18 @@ func routes(_ app: Application) throws {
             
             _ = User.query(on: req.db)
                 .filter(\.$id == uuid)
-                .delete()
+                .first()
+                .flatMapThrowing { readUser in
+                    guard let readUser = readUser else {
+                        throw Abort(.badRequest)
+                    }
+                    if !user.owner! {
+                        if user.admin! && readUser.admin! {
+                            throw Abort(.unauthorized, reason: "Cannot delete another admin")
+                        }
+                    }
+                    _ = user.delete(on: req.db)
+                }
             
             return "User has been removed"
         } else {
@@ -289,7 +307,7 @@ func routes(_ app: Application) throws {
     
     passwordProtected.get("makeAdmin", ":userID") { req -> String in
         let user = try req.auth.require(User.self)
-        if user.admin! {
+        if user.owner! {
             let id = req.parameters.get("userID")!
             
             guard let uuid = UUID(uuidString: id) else {
