@@ -239,7 +239,7 @@ func routes(_ app: Application) throws {
                 .flatMapThrowing { readUser -> EventLoopFuture<Void> in
                     
                     if !user.owner! {
-                        if user.admin! && readUser.admin! {
+                        if user.admin! && readUser.admin! || readUser.owner! {
                             throw Abort(.unauthorized, reason: "Cannot ban another admin")
                         }
                     }
@@ -293,7 +293,7 @@ func routes(_ app: Application) throws {
                         throw Abort(.badRequest)
                     }
                     if !user.owner! {
-                        if user.admin! && readUser.admin! {
+                        if user.admin! && readUser.admin! || readUser.owner! {
                             throw Abort(.unauthorized, reason: "Cannot delete another admin")
                         }
                     }
