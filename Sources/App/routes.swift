@@ -114,10 +114,11 @@ func routes(_ app: Application) throws {
     
     let passwordProtected = app.grouped(User.authenticator())
     
-    passwordProtected.post("login") { req -> User in
+    passwordProtected.post("login") { req -> User.PublicUser in
         let user = try req.auth.require(User.self)
         req.logger.info("\(user.name) logging in")
-        return user
+        
+        return try User.PublicUser(user)
     }
     
     passwordProtected.post("submitDeath") { req -> String in
