@@ -21,7 +21,7 @@
       }
 
       @media (prefers-color-scheme: dark) {
-        .text-dyn {color: rgb(209, 205, 199)!important}
+        .text-dyn {color: rgb(209, 205, 199)!important; text-decoration: none;}
         .text-dyn-header {color:rgb(219, 219, 219)}
         .bg-color {background-color: rgb(27, 30, 31)!important;}
         body { background-color: #181a1b; border-color: rgb(56, 61, 63) !important}
@@ -92,6 +92,7 @@
             #for(user in users):
               <div href="user/#(user.name)" class="text-dyn col-md-8 themed-grid-col"><a href="user/#(user.name)">#(user.name)</a></div>
               <div class="text-dyn col-md-4 themed-grid-col">Score: #(user.score)</div>
+              <br>
             #endfor
           #else:
             <h1 class="text-dyn mt-3">No users were located in the database.</h1>
