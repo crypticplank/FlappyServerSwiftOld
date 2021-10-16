@@ -66,7 +66,10 @@
     </div>
 
     <footer class="pt-3 mt-4 text-muted border-top">
-      &copy; Flappy Bird Rev 2021
+      &copy; Flappy Bird Rev 2019-2021
+    </footer>
+    <footer class="text-muted">
+      designed by cryptofyre :)
     </footer>
   </div>
 </main>
