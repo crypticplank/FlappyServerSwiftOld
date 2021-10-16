@@ -125,7 +125,7 @@ func routes(_ app: Application) throws {
         let user = try req.auth.require(User.self)
         user.deaths! += 1
         let _ = user.update(on: req.db) .map { user }
-        return "ok"
+        throw Abort(.accepted)
     }
     
     // Hacking endpoints
@@ -218,7 +218,7 @@ func routes(_ app: Application) throws {
                 return user.save(on: req.db)
             }
             
-            return "User has been unbanned"
+            throw Abort(.accepted, reason: "User has been unbanned")
         } else {
             throw Abort(.unauthorized)
         }
@@ -248,7 +248,7 @@ func routes(_ app: Application) throws {
                     readUser.banReason = reason
                     return user.save(on: req.db)
                 }
-            return "User has been banned"
+            throw Abort(.accepted, reason: "User has been banned")
         } else {
             throw Abort(.unauthorized)
         }
@@ -270,7 +270,7 @@ func routes(_ app: Application) throws {
                     user.score = score
                     return user.save(on: req.db)
                 }
-            return "Restored score to \(score)"
+            throw Abort(.accepted, reason: "Restored score to \(score)")
         } else {
             throw Abort(.unauthorized)
         }
@@ -300,7 +300,7 @@ func routes(_ app: Application) throws {
                     _ = user.delete(on: req.db)
                 }
             
-            return "User has been removed"
+            throw Abort(.accepted, reason: "User has been removed")
         } else {
             throw Abort(.unauthorized)
         }
@@ -322,7 +322,7 @@ func routes(_ app: Application) throws {
                     return user.save(on: req.db)
                 }
             
-            return "User has been removed"
+            throw Abort(.accepted, reason: "User has been removed")
         } else {
             throw Abort(.unauthorized)
         }
