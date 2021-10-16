@@ -201,7 +201,7 @@ func routes(_ app: Application) throws {
         }
     }
     
-    passwordProtected.get("unban", ":userID") { req -> String in
+    passwordProtected.get("unban", ":userID") { req -> EventLoopFuture<String> in
         let user = try req.auth.require(User.self)
         if user.admin! {
             let id = req.parameters.get("userID")!
@@ -210,16 +210,21 @@ func routes(_ app: Application) throws {
                 throw Abort(.badRequest, reason: "Not a valid uuid")
             }
             
-            _ = User.find(uuid, on: req.db)
+            let ret = User.find(uuid, on: req.db)
             .unwrap(or: Abort(.notFound))
-            .flatMap { readUser -> EventLoopFuture<Void> in
-                req.logger.info("\(user.name) requested to ban \(readUser.name)")
+            .flatMapThrowing { readUser -> String in
+                req.logger.info("\(user.name) requested to unban \(readUser.name)")
+                if !user.owner! {
+                    if user.admin! && readUser.admin! || readUser.owner! {
+                        throw Abort(.unauthorized, reason: "Cannot unban another admin")
+                    }
+                }
                 readUser.isBanned = false
                 readUser.banReason = nil
-                return readUser.save(on: req.db)
+                _ = readUser.save(on: req.db)
+                throw Abort(.accepted, reason: "User has been unbanned")
             }
-            
-            throw Abort(.accepted, reason: "User has been unbanned")
+            return ret
         } else {
             throw Abort(.unauthorized)
         }
@@ -244,8 +249,6 @@ func routes(_ app: Application) throws {
                             throw Abort(.unauthorized, reason: "Cannot ban another admin")
                         }
                     }
-                    
-                    req.logger.info("\(user.name) banned \(readUser.name)")
                     
                     readUser.isBanned = true
                     readUser.banReason = reason
