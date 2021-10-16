@@ -28,6 +28,9 @@ final class Token: Model {
   
     @Field(key: "source")
     var source: SessionSource
+    
+    @Field(key: "expires_at")
+    var expiresAt: Date?
   
     @Timestamp(key: "created_at", on: .create)
     var createdAt: Date?
@@ -54,6 +57,7 @@ extension Token {
                 .unique(on: "value")
                 .field("source", .int, .required)
                 .field("created_at", .datetime, .required)
+                .field("expires_at", .datetime)
                 .create()
         }
 
