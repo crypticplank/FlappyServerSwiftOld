@@ -70,7 +70,7 @@
   <div class="container py-4">
     <header class="pb-3 mb-4 border-bottom">
       <a href="https://flappybird.brandonplank.org/" class="d-flex align-items-center text-dark text-decoration-none">
-        <img width="35" height="35" class="logo me-2" viewBox="0 0 118 94" role="img" src="./Resources/favicon.png">
+        <img width="35" height="35" class="logo me-2" viewBox="0 0 118 94" role="img" src="/images/favicon.png">
         <span class="text-dyn fs-4">Flappy Bird - Leaderboard</span>
       </a>
     </header>
