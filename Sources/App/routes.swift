@@ -28,6 +28,10 @@ func routes(_ app: Application) throws {
             }
     }
     
+    app.get("admin") { req -> EventLoopFuture<View> in
+        return req.view.render("admin")
+    }
+    
     app.get("users") { req in
         return User.query(on: req.db).all().flatMapThrowing { users in
             return try users.map(User.PublicUser.init)
