@@ -70,7 +70,7 @@
   <div class="container py-4">
     <header class="pb-3 mb-4 border-bottom">
       <a href="https://flappybird.brandonplank.org/" class="d-flex align-items-center text-dark text-decoration-none">
-        <img width="35" height="35" class="logo me-2" viewBox="0 0 118 94" role="img" src="./Resources/favicon.png">
+        <img width="35" height="35" class="logo me-2" viewBox="0 0 118 94" role="img" src="/images/favicon.png">
         <span class="text-dyn fs-4">Flappy Bird - Leaderboard</span>
       </a>
     </header>
@@ -90,7 +90,7 @@
           </header>
           #if(count(users) > 0):
             #for(user in users):
-              <div href="user/#(user.name)" class="text-dyn col-md-4 themed-grid-col"><a href="user/#(user.name)">#(user.name)</a></div>
+              <div href="user/#(user.name)" class="text-dyn col-md-8 themed-grid-col"><a href="user/#(user.name)">#(user.name)</a></div>
               <div class="text-dyn col-md-4 themed-grid-col">Score: #(user.score)</div>
             #endfor
           #else:
