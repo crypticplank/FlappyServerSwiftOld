@@ -212,10 +212,11 @@ func routes(_ app: Application) throws {
             
             _ = User.find(uuid, on: req.db)
             .unwrap(or: Abort(.notFound))
-            .flatMap { user -> EventLoopFuture<Void> in
-                user.isBanned = false
-                user.banReason = nil
-                return user.save(on: req.db)
+            .flatMap { readUser -> EventLoopFuture<Void> in
+                req.logger.info("\(user.name) requested to ban \(readUser.name)")
+                readUser.isBanned = false
+                readUser.banReason = nil
+                return readUser.save(on: req.db)
             }
             
             throw Abort(.accepted, reason: "User has been unbanned")
@@ -237,6 +238,7 @@ func routes(_ app: Application) throws {
             _ = User.find(uuid, on: req.db)
                 .unwrap(or: Abort(.notFound))
                 .flatMapThrowing { readUser -> EventLoopFuture<Void> in
+                    req.logger.info("\(user.name) requested to ban \(readUser.name)")
                     if !user.owner! {
                         if user.admin! && readUser.admin! || readUser.owner! {
                             throw Abort(.unauthorized, reason: "Cannot ban another admin")
@@ -247,7 +249,7 @@ func routes(_ app: Application) throws {
                     
                     readUser.isBanned = true
                     readUser.banReason = reason
-                    return user.save(on: req.db)
+                    return readUser.save(on: req.db)
                 }
             throw Abort(.accepted, reason: "User has been banned")
         } else {
@@ -267,9 +269,9 @@ func routes(_ app: Application) throws {
             
             _ = User.find(uuid, on: req.db)
                 .unwrap(or: Abort(.notFound))
-                .flatMap { user -> EventLoopFuture<Void> in
-                    user.score = score
-                    return user.save(on: req.db)
+                .flatMap { readUser -> EventLoopFuture<Void> in
+                    readUser.score = score
+                    return readUser.save(on: req.db)
                 }
             throw Abort(.accepted, reason: "Restored score to \(score)")
         } else {
@@ -318,9 +320,9 @@ func routes(_ app: Application) throws {
             
             _ = User.find(uuid, on: req.db)
                 .unwrap(or: Abort(.notFound))
-                .flatMap { user -> EventLoopFuture<Void> in
-                    user.admin = true
-                    return user.save(on: req.db)
+                .flatMap { readUser -> EventLoopFuture<Void> in
+                    readUser.admin = true
+                    return readUser.save(on: req.db)
                 }
             
             throw Abort(.accepted, reason: "User has been removed")
