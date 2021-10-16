@@ -237,12 +237,13 @@ func routes(_ app: Application) throws {
             _ = User.find(uuid, on: req.db)
                 .unwrap(or: Abort(.notFound))
                 .flatMapThrowing { readUser -> EventLoopFuture<Void> in
-                    
                     if !user.owner! {
                         if user.admin! && readUser.admin! || readUser.owner! {
                             throw Abort(.unauthorized, reason: "Cannot ban another admin")
                         }
                     }
+                    
+                    req.logger.info("\(user.name) banned \(readUser.name)")
                     
                     readUser.isBanned = true
                     readUser.banReason = reason
