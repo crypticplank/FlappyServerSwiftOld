@@ -48,10 +48,13 @@ final class User: Model, Content {
     @Field(key: "admin")
     var admin: Bool?
     
+    @Field(key: "owner")
+    var owner: Bool?
+    
     
     init() { }
     
-    init(id: UUID? = UUID(), name: String, score: Int? = 0, deaths: Int? = 0, passwordHash: String, jailbroken: Bool? = false, hasHackedTools: Bool? = false, ranInEmulator: Bool? = false, hasModifiedScore: Bool? = false, isBanned: Bool? = false, banReason: String? = nil, admin: Bool? = false) {
+    init(id: UUID? = UUID(), name: String, score: Int? = 0, deaths: Int? = 0, passwordHash: String, jailbroken: Bool? = false, hasHackedTools: Bool? = false, ranInEmulator: Bool? = false, hasModifiedScore: Bool? = false, isBanned: Bool? = false, banReason: String? = nil, admin: Bool? = false, owner: Bool? = false) {
         self.id = id
         self.name = name
         self.score = score
@@ -64,6 +67,7 @@ final class User: Model, Content {
         self.isBanned = isBanned
         self.banReason = banReason
         self.admin = admin
+        self.owner = owner
     }
 }
 
@@ -99,6 +103,7 @@ extension User {
                 .field("isBanned", .bool)
                 .field("banReason", .string)
                 .field("admin", .bool)
+                .field("owner", .bool)
                 .unique(on: "name")
                 .create()
         }
