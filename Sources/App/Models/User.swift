@@ -90,7 +90,7 @@ extension User {
 extension User {
     struct Migration: Fluent.Migration {
         func prepare(on database: Database) -> EventLoopFuture<Void> {
-            database.schema("users")
+            database.schema(User.schema)
                 .id()
                 .field("name", .string)
                 .field("score", .int)
@@ -109,7 +109,7 @@ extension User {
         }
 
         func revert(on database: Database) -> EventLoopFuture<Void> {
-            database.schema("users").delete()
+            database.schema(User.schema).delete()
         }
     }
 }

@@ -106,6 +106,7 @@ func routes(_ app: Application) throws {
         guard create.password == create.confirmPassword else {
             throw Abort(.badRequest, reason: "Passwords did not match")
         }
+        
         let user = try User(
             name: create.name,
             passwordHash: Bcrypt.hash(create.password)

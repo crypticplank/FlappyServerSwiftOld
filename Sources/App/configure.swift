@@ -16,6 +16,7 @@ public func configure(_ app: Application) throws {
     
     app.databases.use(.sqlite(.file("flappybird.sqlite")), as: .sqlite)
     app.migrations.add(User.Migration())
+    app.migrations.add(Token.Migration())
     
     app.views.use(.leaf)
     
