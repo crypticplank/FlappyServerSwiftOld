@@ -225,7 +225,7 @@ func routes(_ app: Application) throws {
         }
     }
     
-    passwordProtected.get("ban", ":userID", ":reason") { req -> String in
+    passwordProtected.get("ban", ":userID", ":reason") { req -> EventLoopFuture<String> in
         let user = try req.auth.require(User.self)
         if user.admin! {
             let id = req.parameters.get("userID")!
@@ -235,9 +235,9 @@ func routes(_ app: Application) throws {
                 throw Abort(.badRequest, reason: "Not a valid uuid")
             }
             
-            _ = User.find(uuid, on: req.db)
+            let ret = User.find(uuid, on: req.db)
                 .unwrap(or: Abort(.notFound))
-                .flatMapThrowing { readUser -> EventLoopFuture<Void> in
+                .flatMapThrowing { readUser -> String in
                     req.logger.info("\(user.name) requested to ban \(readUser.name)")
                     if !user.owner! {
                         if user.admin! && readUser.admin! || readUser.owner! {
@@ -249,9 +249,10 @@ func routes(_ app: Application) throws {
                     
                     readUser.isBanned = true
                     readUser.banReason = reason
-                    return readUser.save(on: req.db)
+                    _ = readUser.save(on: req.db)
+                    throw Abort(.accepted, reason: "User has been banned")
                 }
-            throw Abort(.accepted, reason: "User has been banned")
+            return ret
         } else {
             throw Abort(.unauthorized)
         }
