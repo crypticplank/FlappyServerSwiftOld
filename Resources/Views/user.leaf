@@ -5,7 +5,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet"> 
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-<title>#(user.name)</title>
+<title>#(user.name) - Flappy Bird Rev</title>
 <meta name="twitter:card" content="summary" />
 <meta name="twitter:site" content="@FlappyBirdRev" />
 <meta name="twitter:title" content="#(user.name)'s Profile" />
