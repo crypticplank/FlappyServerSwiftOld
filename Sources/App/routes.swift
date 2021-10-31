@@ -94,8 +94,11 @@ func routes(_ app: Application) throws {
         return User.query(on: req.db)
             .filter(\.$name == name!)
             .first()
-            .map { user -> String in
-                return user!.id!.uuidString
+            .flatMapThrowing { user -> String in
+                guard let id = user!.id?.uuidString else {
+                    throw Abort(.badRequest, reason: "Failed to unwrap user uuid?");
+                }
+                return id
             }
     }
     
