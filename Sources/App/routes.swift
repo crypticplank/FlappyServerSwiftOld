@@ -95,7 +95,11 @@ func routes(_ app: Application) throws {
             .filter(\.$name == name!)
             .first()
             .flatMapThrowing { user -> String in
-                guard let id = user!.id?.uuidString else {
+                guard let user = user else {
+                    throw Abort(.badRequest, reason: "Failed to get actual user.");
+                }
+                
+                guard let id = user.id?.uuidString else {
                     throw Abort(.badRequest, reason: "Failed to unwrap user uuid?");
                 }
                 return id
