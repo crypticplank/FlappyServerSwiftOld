@@ -49,7 +49,7 @@
     <div class="p-5 mb-4 bg-color bg-light rounded-3">
       <div class="container-fluid py-5">
         #if(user):
-          <h1 class="text-dyn-header display-5 fw-bold">#(user.name)</h1>
+          <h1 class="text-dyn-header display-5 fw-bold">#(user.name)#if(user.isBanned): (Banned) #endif</h1>
           <p class="text-dyn col-md-8 fs-4">Score: #(user.score)</p>
           <p class="text-dyn col-md-8 fs-4">Deaths: #(user.deaths)</p>
           <button class="btn btn-primary btn-lg" onclick="window.location.href='https://flappybird.brandonplank.org/'" type="button">Return to Leaderboard</button>
