@@ -111,6 +111,7 @@ func routes(_ app: Application) throws {
         return User.query(on: req.db)
             .sort(\.$score, .descending)
             .filter(\.$isBanned == false)
+            .filter(\.$score > 0)
             .range(..<amount)
             .all()
             .flatMapThrowing { users in
