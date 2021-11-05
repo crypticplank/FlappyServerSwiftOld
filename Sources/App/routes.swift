@@ -142,7 +142,17 @@ func routes(_ app: Application) throws {
         if create.name.count > 15 {
             throw Abort(.badRequest, reason: "Your name may not be longer that 15 characters.")
         }
-                              
+        
+        if create.name.contains(" ") {
+            throw Abort(.badRequest, reason: "Your name may not contain spaces.")
+        }
+        
+        let regex = ".*[^A-Za-z0-9].*"
+        let testString = NSPredicate(format:"SELF MATCHES %@", regex)
+        if testString.evaluate(with: String.self) {
+            throw Abort(.badRequest, reason: "Your name may not contain special characters.")
+        }
+        
         guard create.password == create.confirmPassword else {
             throw Abort(.badRequest, reason: "Passwords did not match")
         }
