@@ -86,7 +86,7 @@
           </header>
           <h1 class="text-dyn mt-0">Players: #(players)</h1>
           <h1 class="text-dyn mt-3">Deaths: #(deaths)</h1>
-          <h1 href="bans/" class="text-dyn mt-3">Bans</h1>
+          <h1><a href="bans/" class="text-dyn mt-3">Bans</a></h1>
         </div>
         <div class="row mb-3">
           <header class="pb-3 mb-4 border-bottom">
